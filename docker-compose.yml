@@ -1,0 +1,21 @@
+version: '3.0'
+
+services:
+    web:
+      build: ./web
+      image: frrc/web
+      ports:
+        - 3000:3000
+      networks:
+        - frrc
+
+    server:
+      build: ./server
+      image: frrc/server
+      ports:
+        - 9009:9009
+      networks:
+        - frrc
+
+networks:
+  frrc:

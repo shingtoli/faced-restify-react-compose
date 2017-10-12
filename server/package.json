@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src -d dist",
+    "test": "mocha --require babel-register --require babel-polyfill src/**/test/**/*.js"
+  },
+  "dependencies": {
+    "level": "^1.7.0",
+    "restify": "^6.0.1",
+    "sharp": "^0.18.4",
+    "uniqid": "^4.1.1",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-airbnb": "^2.4.0",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb-base": "^12.0.2",
+    "eslint-plugin-import": "^2.7.0",
+    "mocha": "^4.0.1",
+    "sinon": "^4.0.1",
+    "supertest": "^3.0.0"
+  }
+}
