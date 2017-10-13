@@ -5,12 +5,16 @@ services:
       container_name: frrc-web
       build: ./web
       image: frrc/web
+      environment:
+        - REACT_APP_SERVER_URL=localhost:9009
       volumes:
         - ./web/src:/app/src
         - ./web/public:/app/public
         - ./web/package.json:/app/package.json
       ports:
         - 3000:3000
+      links:
+        - server
       networks:
         - frrc
 
@@ -21,7 +25,11 @@ services:
       environment:
         - NODE_ENV=development
       volumes:
-        - ./server:/app
+        - ./server/src:/app/src
+        - ./server/public:/app/public
+        - ./server/data:/app/data
+        - ./server/storage:/app/storage
+        - ./server/package.json:/app/package.json
       ports:
         - 9009:9009
       networks:

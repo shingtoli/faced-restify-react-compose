@@ -1,20 +1,19 @@
-FROM node:alpine
+FROM centos:latest
 
 ENV PKG_CONFIG_PATH=/usr/share/OpenCV/lib/pkgconfig
 
-RUN mkdir -p /app/data && mkdir -p /app/storage && \
-    echo 'http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
+RUN mkdir -p /app/data && mkdir -p /app/storage
 
 WORKDIR /app
 
 COPY package.json .
 
-RUN apk update && \
-    apk add --no-cache opencv-dev bash vips-dev fftw-dev && \
-    apk add --virtual gyp python make g++ pkgconfig && \
+RUN yum -y update && \
+    yum -y install epel-release && \
+    yum -y install nodejs npm opencv* bash python make gcc-c++ && \
     npm i -g yarn && \
     yarn install && \
-    apk del gyp
+    yum -y clean all
 
 COPY . .
 

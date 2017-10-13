@@ -10,6 +10,7 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "base64-min": "^2.0.0",
     "encoding-down": "^2.3.1",
     "faced": "^1.2.0",
     "leveldown": "^2.0.0",

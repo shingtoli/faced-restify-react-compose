@@ -857,6 +857,10 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "http://pyfarm-registry.local:4873/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
 
+base64-min@^2.0.0:
+  version "2.0.0"
+  resolved "http://pyfarm-registry.local:4873/base64-min/-/base64-min-2.0.0.tgz#316c3368ce3a8f2ca2941ca696f927dd26367882"
+
 bcrypt-pbkdf@^1.0.0:
   version "1.0.1"
   resolved "http://pyfarm-registry.local:4873/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.1.tgz#63bc5dcb61331b92bc05fd528953c33462a06f8d"

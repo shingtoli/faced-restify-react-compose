@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import uniqid from 'uniqid';
+import base64 from 'base64-min';
 
 let db;
 
@@ -43,8 +44,31 @@ const uploadImage = (req, res, next) => {
     description: req.body.description,
   };
   const filename = `${imageId}.${imageObj.ext}`;
+  const filepath = path.join(__dirname, '..', '..', 'storage', filename);
 
-  if (!blob) {
+  const complete = () => {
+    res.send(200, { key: imageId });
+    return next();
+  };
+
+  const putPromise = new Promise((resolve, reject) => {
+    db.put(imageId, imageObj, (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve();
+    });
+  });
+
+  if (typeof blob === 'undefined') {
+    const imgSrc = req.body.base64;
+    if (imgSrc) {
+      base64.decodeToFile(imgSrc.replace(/^data:image\/png;base64,/, ''), filepath);
+      return putPromise.then(complete).catch((err) => {
+        next(err);
+      });
+    }
+
     return next(new Error('Bad image request'));
   }
 
@@ -59,7 +83,7 @@ const uploadImage = (req, res, next) => {
 
   const writePromise = data => new Promise((resolve, reject) => {
     fs.writeFile(
-      path.join(__dirname, '..', '..', 'storage', filename),
+      filepath,
       data,
       'binary',
       (err) => {
@@ -72,22 +96,10 @@ const uploadImage = (req, res, next) => {
     );
   });
 
-  const putPromise = new Promise((resolve, reject) => {
-    db.put(imageId, imageObj, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve();
-    });
-  });
-
   readTempPromise
     .then(data => writePromise(data))
     .then(() => putPromise)
-    .then(() => {
-      res.send(200, { key: imageId });
-      return next();
-    })
+    .then(complete)
     .catch(reason => next(reason));
 
   return writePromise;
