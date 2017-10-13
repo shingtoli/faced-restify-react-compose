@@ -1,5 +1,7 @@
-import level from 'level';
+import levelup from 'levelup';
+import leveldown from 'leveldown';
+import encode from 'encoding-down';
 
-const db = level('./data', { valueEncoding: 'json' });
+const db = levelup(encode(leveldown('./data'), { valueEncoding: 'json' }));
 
 export default db;

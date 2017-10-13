@@ -2,16 +2,26 @@ version: '3.0'
 
 services:
     web:
+      container_name: frrc-web
       build: ./web
       image: frrc/web
+      volumes:
+        - ./web/src:/app/src
+        - ./web/public:/app/public
+        - ./web/package.json:/app/package.json
       ports:
         - 3000:3000
       networks:
         - frrc
 
     server:
+      container_name: frrc-server
       build: ./server
       image: frrc/server
+      environment:
+        - NODE_ENV=development
+      volumes:
+        - ./server:/app
       ports:
         - 9009:9009
       networks:

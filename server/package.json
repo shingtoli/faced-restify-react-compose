@@ -1,14 +1,19 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "build": "babel src -d dist",
-    "test": "mocha --require babel-register --require babel-polyfill src/**/test/**/*.js"
+    "test": "mocha --require babel-register --require babel-polyfill src/**/test/**/*.js",
+    "start-dev": "nodemon --exec babel-node -- src/server.js",
+    "start": "node dist/server.js"
   },
   "dependencies": {
-    "level": "^1.7.0",
+    "encoding-down": "^2.3.1",
+    "faced": "^1.2.0",
+    "leveldown": "^2.0.0",
+    "levelup": "^2.0.0",
     "restify": "^6.0.1",
     "sharp": "^0.18.4",
     "uniqid": "^4.1.1",
@@ -25,6 +30,7 @@
     "eslint-config-airbnb-base": "^12.0.2",
     "eslint-plugin-import": "^2.7.0",
     "mocha": "^4.0.1",
+    "nodemon": "^1.12.1",
     "sinon": "^4.0.1",
     "supertest": "^3.0.0"
   }

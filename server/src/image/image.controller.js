@@ -34,7 +34,7 @@ const readImage = (req, res, next) => {
 };
 
 const uploadImage = (req, res, next) => {
-  const { blob } = req.body;
+  const { blob } = req.files;
   const imageId = uniqid();
   const imageObj = {
     ext: req.body.ext,
@@ -44,15 +44,34 @@ const uploadImage = (req, res, next) => {
   };
   const filename = `${imageId}.${imageObj.ext}`;
 
-  const writePromise = new Promise((resolve, reject) => {
-    fs.writeFile(path.join(__dirname, '..', '..', 'storage', filename), blob, (err) => {
+  if (!blob) {
+    return next(new Error('Bad image request'));
+  }
+
+  const readTempPromise = new Promise((resolve, reject) => {
+    fs.readFile(blob.path, (err, data) => {
       if (err) {
         reject(err);
-      } else {
-        resolve();
       }
+      resolve(data);
     });
   });
+
+  const writePromise = data => new Promise((resolve, reject) => {
+    fs.writeFile(
+      path.join(__dirname, '..', '..', 'storage', filename),
+      data,
+      'binary',
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      },
+    );
+  });
+
   const putPromise = new Promise((resolve, reject) => {
     db.put(imageId, imageObj, (err) => {
       if (err) {
@@ -61,16 +80,15 @@ const uploadImage = (req, res, next) => {
       resolve();
     });
   });
-  writePromise
+
+  readTempPromise
+    .then(data => writePromise(data))
     .then(() => putPromise)
     .then(() => {
       res.send(200, { key: imageId });
       return next();
     })
-    .catch((reason) => {
-      res.send(400, reason);
-      return next();
-    });
+    .catch(reason => next(reason));
 
   return writePromise;
 };

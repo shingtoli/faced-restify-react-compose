@@ -1,7 +1,9 @@
 import chai from 'chai';
 import sinon from 'sinon';
 import req from 'supertest';
-import level from 'level';
+import levelup from 'levelup';
+import leveldown from 'leveldown';
+import encode from 'encoding-down';
 import restify from 'restify';
 import path from 'path';
 import fs from 'fs';
@@ -19,7 +21,7 @@ describe('# Image', () => {
   });
 
   beforeEach((done) => {
-    db = level('./test-data', { valueEncoding: 'json' }, () => {
+    db = levelup(encode(leveldown('./test-data'), { valueEncoding: 'json' }), () => {
       initRoutes(server, db);
       done();
     });
@@ -27,7 +29,7 @@ describe('# Image', () => {
 
   afterEach((done) => {
     db.close(() => {
-      level.destroy('./test-data', (err) => {
+      leveldown.destroy('./test-data', (err) => {
         if (err) {
           throw new Error(err);
         }
@@ -64,7 +66,7 @@ describe('# Image', () => {
     });
     db.batch(testOps, (err) => {
       if (err) {
-        return done(new Error(err));
+        return done(err);
       }
       return req(server).get('/images').expect(200, values).end(done);
     });
@@ -99,24 +101,30 @@ describe('# Image', () => {
 
     const retrieve = (err, res) => {
       if (err) {
-        return done(new Error(err));
+        return done(err);
       }
-      return db.get(res.body.key, (getErr, value) => {
+      const { key } = res.body;
+      return db.get(key, (getErr, value) => {
+        const filepath = path.join('.', 'storage', `${key}.png`);
         if (getErr) {
           return done(new Error(getErr));
         }
-        assert.equal(value, testObj, 'Image record inserted does not match test.');
-        return fs.access(path.join('.', 'public', 'test.png'), (accErr) => {
+        assert.deepEqual(value, testObj, 'Image record inserted does not match test.');
+        return fs.access(filepath, (accErr) => {
           assert.notExists(accErr, 'Uploaded image is not accessible.');
-          return done();
+          if (!accErr) {
+            fs.unlink(filepath, () => done());
+          } else {
+            done();
+          }
         });
       });
     };
 
     req(server)
       .post('/images')
-      .attach('blob', './public/test.png')
       .field(testObj)
+      .attach('blob', path.join('.', 'public', 'test.png'))
       .end(retrieve);
   });
 
