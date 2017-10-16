@@ -1,18 +1,15 @@
-# Faced on Restify & React with Docker-Compose #
+# Face Detection over Web #
+Faced on Restify & React with Docker-Compose
 
-## MacOS ##
+## Running the Docker Containers ##
 
-### Installing OpenCV ###
+1. Ensure that Docker is running
 
-```shell
-brew tap homebrew/science
-brew install opencv@2
-```
+  ````shell
+  cd faced-restify-react-compose
+  docker-compose up -d
+  ````
 
-### Setup Server ###
+2. Navigate to [localhost:3000](http://localhost:3000)
 
-```shell
-cd server
-export PKG_CONFIG_PATH=/usr/local/opt/opencv@2/lib/pkgconfig
-yarn install
-```
+  Note: use only `localhost` for the url as Browser Webcam requires a `https` connection otherwise.
